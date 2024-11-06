@@ -102,8 +102,8 @@ class gitlab_ci_runner (
   Optional[Pattern[/.*:.+/]]                 $listen_address    = undef,
   Optional[Gitlab_ci_runner::Session_server] $session_server    = undef,
   Enum['repo', 'binary']                     $install_method    = 'repo',
-  Stdlib::HTTPUrl                            $binary_source     = 'https://s3.dualstack.us-east-1.amazonaws.com/gitlab-runner-downloads/latest/binaries/gitlab-runner-linux-amd64',
-  Stdlib::Absolutepath                       $binary_path       = '/usr/local/bin/gitlab-runner',
+  Stdlib::HTTPUrl                            $binary_source,
+  Stdlib::Absolutepath                       $binary_path,
   Boolean                                    $manage_user       = false,
   String[1]                                  $user              = 'gitlab-runner',
   String[1]                                  $group             = $user,
@@ -113,9 +113,9 @@ class gitlab_ci_runner (
   String                                     $package_name      = 'gitlab-runner',
   Stdlib::HTTPUrl                            $repo_base_url     = 'https://packages.gitlab.com',
   Optional[Gitlab_ci_runner::Keyserver]      $repo_keyserver    = undef,
-  String                                     $config_path       = '/etc/gitlab-runner/config.toml',
-  String[1]                                  $config_owner      = 'root',
-  String[1]                                  $config_group      = 'root',
+  String                                     $config_path,
+  String[1]                                  $config_owner,
+  String[1]                                  $config_group',
   Stdlib::Filemode                           $config_mode       = '0444',
   Boolean                                    $manage_config_dir = false,
   Optional[Stdlib::Filemode]                 $config_dir_mode   = undef,
@@ -124,21 +124,32 @@ class gitlab_ci_runner (
   Stdlib::HTTPSUrl                           $repo_keysource    = "${repo_base_url}/gpg.key",
 ) {
   if $manage_docker {
-    # workaround for cirunner issue #1617
-    # https://gitlab.com/gitlab-org/gitlab-ci-multi-runner/issues/1617
-    stdlib::ensure_packages($xz_package_name)
-
-    $docker_images = {
-      ubuntu_focal => {
+    $docker_images = $facts['os']['family'] ? {
+      'RedHat' => ubuntu_focal => {
         image     => 'ubuntu',
         image_tag => 'focal',
       },
+      'Windows' =>  powershell => {
+        image     => 'mcr.microsoft.com/powershell',
+        image_tag => 'focal',
+      },
+      default   => 'unsupported',
+    }
+
+    if $facts['os']['family'] == 'RedHat' {
+      # workaround for cirunner issue #1617
+      # https://gitlab.com/gitlab-org/gitlab-ci-multi-runner/issues/1617
+      stdlib::ensure_packages($xz_package_name)
     }
 
     include docker
     class { 'docker::images':
       images => $docker_images,
     }
+  }
+
+  if $install_method == 'repo' && $facts['os']['family'] == 'windows' {
+    include chocolatey
   }
 
   if $manage_repo {

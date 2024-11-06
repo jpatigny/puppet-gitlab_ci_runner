@@ -10,8 +10,18 @@ class gitlab_ci_runner::install (
 
   case $gitlab_ci_runner::install_method {
     'repo': {
-      package { $package_name:
-        ensure => $package_ensure,
+      case $facts['os']['family'] {
+        'windows': {
+          package { $package_name:
+            ensure   => $package_ensure,
+            provider => 'chocolatey',
+          }
+        }
+        default: {
+          package { $package_name:
+            ensure   => $package_ensure,
+          }
+        }
       }
     }
     'binary': {

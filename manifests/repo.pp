@@ -66,6 +66,12 @@ class gitlab_ci_runner::repo (
         sslverify     => '1',
       }
     }
+    'windows': {
+      chocolateysource {"runner_${package_name}-source":
+        ensure   => present,
+        location => $repo_base_url,
+      }
+    }
     default: {
       fail ("gitlab_ci_runner::repo isn't suppored for ${facts['os']['family']}!")
     }
