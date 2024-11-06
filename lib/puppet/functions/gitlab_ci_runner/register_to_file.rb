@@ -34,7 +34,12 @@ Puppet::Functions.create_function(:'gitlab_ci_runner::register_to_file') do
   end
 
   def register_to_file(url, regtoken, runner_name, additional_options = {}, proxy = nil, ca_file = nil)
-    filename = "/etc/gitlab-runner/auth-token-#{runner_name}"
+    filename = case RUBY_PLATFORM
+    when /win32|mingw|cygwin/
+      "C:/gitlab-runner/auth-token-#{runner_name}"
+    when /linux/
+      "/etc/gitlab-runner/auth-token-#{runner_name}"
+    end
     if File.exist?(filename)
       authtoken = File.read(filename).strip
     else
@@ -58,11 +63,11 @@ Puppet::Functions.create_function(:'gitlab_ci_runner::register_to_file') do
         dirname = File.dirname(filename)
         unless File.exist?(dirname)
           FileUtils.mkdir_p(File.dirname(filename))
-          File.chmod(0o700, dirname)
+          File.chmod(0o700, dirname) unless RUBY_PLATFORM =~ /win32|mingw|cygwin/
         end
 
         File.write(filename, authtoken)
-        File.chmod(0o400, filename)
+        File.chmod(0o400, filename) unless RUBY_PLATFORM =~ /win32|mingw|cygwin/
       rescue Net::HTTPError => e
         raise "Gitlab runner failed to register: #{e.message}"
       end

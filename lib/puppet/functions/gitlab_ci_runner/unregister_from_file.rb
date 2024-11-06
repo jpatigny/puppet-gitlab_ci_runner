@@ -24,7 +24,12 @@ Puppet::Functions.create_function(:'gitlab_ci_runner::unregister_from_file') do
   end
 
   def unregister_from_file(url, runner_name, proxy = nil, ca_file = nil)
-    filename = "/etc/gitlab-runner/auth-token-#{runner_name}"
+    filename = case RUBY_PLATFORM
+    when /win32|mingw|cygwin/
+      "C:/gitlab-runner/auth-token-#{runner_name}"
+    when /linux/
+      "/etc/gitlab-runner/auth-token-#{runner_name}"
+    end
     return "#{filename} file doesn't exist" unless File.exist?(filename)
 
     authtoken = File.read(filename).strip
