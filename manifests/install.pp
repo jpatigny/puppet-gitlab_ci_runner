@@ -13,8 +13,9 @@ class gitlab_ci_runner::install (
       case $facts['os']['family'] {
         'windows': {
           package { $package_name:
-            ensure   => $package_ensure,
-            provider => 'chocolatey',
+            ensure          => $package_ensure,
+            provider        => 'chocolatey',
+            install_options => ['/Service'],
           }
         }
         default: {

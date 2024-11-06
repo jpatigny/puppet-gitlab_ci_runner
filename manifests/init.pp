@@ -124,22 +124,24 @@ class gitlab_ci_runner (
   Stdlib::HTTPSUrl                           $repo_keysource    = "${repo_base_url}/gpg.key",
 ) {
   if $manage_docker {
-    $docker_images = $facts['os']['family'] ? {
-      'RedHat' => ubuntu_focal => {
-        image     => 'ubuntu',
-        image_tag => 'focal',
-      },
-      'Windows' =>  powershell => {
-        image     => 'mcr.microsoft.com/powershell',
-        image_tag => 'focal',
-      },
-      default   => 'unsupported',
-    }
-
     if $facts['os']['family'] == 'RedHat' {
+      $docker_images = {
+        ubuntu_focal => {
+          image     => 'ubuntu',
+          image_tag => 'focal',
+        },
+      }
       # workaround for cirunner issue #1617
       # https://gitlab.com/gitlab-org/gitlab-ci-multi-runner/issues/1617
       stdlib::ensure_packages($xz_package_name)
+    }
+    if $facts['os']['family'] == 'windows' {
+      $docker_images = {
+        nanoserver => {
+          image     => 'mcr.microsoft.com/windows/nanoserver',
+          image_tag => "ltsc${facts['os']['release']['major']}",
+        },
+      }
     }
 
     include docker
