@@ -23,6 +23,10 @@
     {
       "name": "puppetlabs/apt",
       "version_requirement": ">= 6.3.0 < 10.0.0"
+    },
+    {
+      "name": "puppetlabs/chocolatey",
+      "version_requirement": ">= 8.0.0 < 10.0.0"
     }
   ],
   "operatingsystem_support": [
@@ -78,6 +82,13 @@
       "operatingsystemrelease": [
         "12",
         "15"
+      ]
+    },
+    {
+      "operatingsystem": "windows",
+      "operatingsystemrelease": [
+        "2019",
+        "2022"
       ]
     }
   ],
