@@ -1,0 +1,6 @@
+---
+gitlab_ci_runner::binary_source: https://s3.dualstack.us-east-1.amazonaws.com/gitlab-runner-downloads/latest/binaries/gitlab-runner-windows-amd64.exe
+gitlab_ci_runner::binary_path: C:/gitlab-runner/gitlab-runner.exe
+gitlab_ci_runner::config_path: C:/gitlab-runner/gitlab-runner/config.toml
+gitlab_ci_runner::config_owner: Administrator
+gitlab_ci_runner::config_group: Administrators
