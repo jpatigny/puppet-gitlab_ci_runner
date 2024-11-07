@@ -150,7 +150,7 @@ class gitlab_ci_runner (
     }
   }
 
-  if $install_method == 'repo' && $facts['os']['family'] == 'windows' {
+  if $install_method == 'repo' and $facts['os']['family'] == 'windows' {
     include chocolatey
   }
 
