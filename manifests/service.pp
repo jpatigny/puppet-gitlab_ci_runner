@@ -13,7 +13,7 @@ class gitlab_ci_runner::service (
     }
   }
   if $facts['os']['family'] == 'windows' {
-    $install_path = $gitlab_ci_runner::binary_path =~ /^(.+)\/[^\/]+$/ ? $1 : $gitlab_ci_runner::binary_path
+    $install_path = join(split($gitlab_ci_runner::binary_path, '/')[0, 1], '/')
     registry::service { $package_name:
       ensure       => present,
       display_name => $package_name,
