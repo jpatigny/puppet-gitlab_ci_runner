@@ -8,7 +8,7 @@ class gitlab_ci_runner::service (
   assert_private()
 
   if $facts['os']['family'] == 'Suse' {
-    exec { "${gitlab_ci_runner::install_path}/${gitlab_ci_runner::binary}" install -u ${gitlab_ci_runner::user}":
+    exec { "${gitlab_ci_runner::install_path}/${gitlab_ci_runner::binary} install -u ${gitlab_ci_runner::user}":
       creates => '/etc/systemd/system/gitlab-runner.service',
     }
   }
