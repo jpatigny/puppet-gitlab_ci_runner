@@ -29,13 +29,13 @@ class gitlab_ci_runner::install (
         'installed' => 'present',
         default  => $package_ensure,
       }
-      archive { $gitlab_ci_runner::binary_path:
+      archive { "${gitlab_ci_runner::install_path}/${gitlab_ci_runner::binary}":
         ensure  => $_package_ensure,
         source  => $gitlab_ci_runner::binary_source,
         extract => false,
-        creates => $gitlab_ci_runner::binary_path,
+        creates => "${gitlab_ci_runner::install_path}/${gitlab_ci_runner::binary}",
       }
-      file { $gitlab_ci_runner::binary_path:
+      file { "${gitlab_ci_runner::install_path}/${gitlab_ci_runner::binary}":
         ensure => file,
         mode   => '0755',
       }

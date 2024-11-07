@@ -39,8 +39,10 @@
 #   If repo or binary should be installed
 # @param binary_source
 #   URL to the binary file
-# @param binary_path
+# @param install_path
 #   Absolute path where to install gitlab_runner binary
+# @param binary
+#   gitlab-runner binary name
 # @param manage_user
 #   If the user should be managed.
 # @param user
@@ -103,7 +105,8 @@ class gitlab_ci_runner (
   Optional[Gitlab_ci_runner::Session_server] $session_server    = undef,
   Enum['repo', 'binary']                     $install_method    = 'repo',
   Stdlib::HTTPUrl                            $binary_source,
-  Stdlib::Absolutepath                       $binary_path,
+  Stdlib::Absolutepath                       $install_path,
+  String[1]                                  $binary,
   Boolean                                    $manage_user       = false,
   String[1]                                  $user              = 'gitlab-runner',
   String[1]                                  $group             = $user,
