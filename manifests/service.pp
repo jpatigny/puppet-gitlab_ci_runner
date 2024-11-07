@@ -14,13 +14,12 @@ class gitlab_ci_runner::service (
   }
   if $facts['os']['family'] == 'windows' {
     $install_path = join(split($gitlab_ci_runner::binary_path, '/')[0, 1], '/')
-    registry::service { $package_name:
-      ensure       => present,
-      display_name => $package_name,
-      description  => $package_name,
-      command      => "${gitlab_ci_runner::binary_path} run --working-directory ${install_path} --config ${install_path}/config.toml --service ${package_name} --syslog",
-      start        => 'automatic',
-      notify       => Service[$package_name]
+    exec { 'install gitlab-runner windows service' :
+      command   => "& ${gitlab_ci_runner::binary_path} install -c ${gitlab_ci_runner::config_path} -d ${install_path}",
+      onlyif    => "if(!(Get-Service -Name 'gitlab-runner')) { exit 0 } else { exit 1 }",
+      provider  => powershell,
+      logoutput => true,
+      notify    => Service[$package_name],
     }
   } 
   service { $package_name:
