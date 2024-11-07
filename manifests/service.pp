@@ -19,6 +19,7 @@ class gitlab_ci_runner::service (
       display_name => $package_name,
       description  => $package_name,
       command      => "${gitlab_ci_runner::binary_path} run --working-directory ${install_path} --config ${install_path}/config.toml --service ${package_name} --syslog",
+      start        => 'automatic',
       notify       => Service[$package_name]
     }
   } 
