@@ -12,6 +12,16 @@ class gitlab_ci_runner::service (
       creates => '/etc/systemd/system/gitlab-runner.service',
     }
   }
+  if $facts['os']['family'] == 'windows' {
+    $install_path = $gitlab_ci_runner::binary_path =~ /^(.+)\/[^\/]+$/ ? $1 : $gitlab_ci_runner::binary_path
+    registry::service { $package_name:
+      ensure       => present,
+      display_name => $package_name,
+      description  => $package_name,
+      command      => "${gitlab_ci_runner::binary_path} run --working-directory ${install_path} --config ${install_path}/config.toml --service ${package_name} --syslog",
+      notify       => Service[$package_name]
+    }
+  } 
   service { $package_name:
     ensure => running,
     enable => true,

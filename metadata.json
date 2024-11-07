@@ -27,6 +27,10 @@
     {
       "name": "puppetlabs/chocolatey",
       "version_requirement": ">= 8.0.0 < 10.0.0"
+    },
+    {
+      "name": "puppetlabs/registry",
+      "version_requirement": ">= 5.0.0 < 10.0.0"
     }
   ],
   "operatingsystem_support": [

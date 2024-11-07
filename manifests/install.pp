@@ -15,7 +15,6 @@ class gitlab_ci_runner::install (
           package { $package_name:
             ensure          => $package_ensure,
             provider        => 'chocolatey',
-            install_options => ['--params', "'/Service'"],
           }
         }
         default: {
