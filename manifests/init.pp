@@ -115,7 +115,7 @@ class gitlab_ci_runner (
   Optional[Gitlab_ci_runner::Keyserver]      $repo_keyserver    = undef,
   String                                     $config_path,
   String[1]                                  $config_owner,
-  String[1]                                  $config_group',
+  String[1]                                  $config_group,
   Stdlib::Filemode                           $config_mode       = '0444',
   Boolean                                    $manage_config_dir = false,
   Optional[Stdlib::Filemode]                 $config_dir_mode   = undef,
