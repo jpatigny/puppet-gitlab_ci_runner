@@ -35,17 +35,19 @@ class gitlab_ci_runner::install (
         extract => false,
         creates => "${gitlab_ci_runner::install_path}/${gitlab_ci_runner::binary}",
       }
-      file { "${gitlab_ci_runner::install_path}/${gitlab_ci_runner::binary}":
-        ensure => file,
-        mode   => '0755',
-      }
-      if $gitlab_ci_runner::manage_user {
-        group { $gitlab_ci_runner::group:
-          ensure => present,
+      if $facts['os']['family'] == "RedHat" {
+        file { "${gitlab_ci_runner::install_path}/${gitlab_ci_runner::binary}":
+          ensure => file,
+          mode   => '0755',
         }
-        user { $gitlab_ci_runner::user:
-          ensure => present,
-          gid    => $gitlab_ci_runner::group,
+        if $gitlab_ci_runner::manage_user {
+          group { $gitlab_ci_runner::group:
+            ensure => present,
+          }
+          user { $gitlab_ci_runner::user:
+            ensure => present,
+            gid    => $gitlab_ci_runner::group,
+          }
         }
       }
     }

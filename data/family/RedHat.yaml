@@ -1,6 +1,6 @@
 ---
 gitlab_ci_runner::xz_package_name: 'xz'
-gitlab_ci_runner::binary_source: 'https://s3.dualstack.us-east-1.amazonaws.com/gitlab-runner-downloads/latest/binaries/gitlab-runner-linux-amd64'
+gitlab_ci_runner::binary_source: 'https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-amd64'
 gitlab_ci_runner::config_path: '/etc/gitlab-runner/config.toml'
 gitlab_ci_runner::config_owner: root
 gitlab_ci_runner::config_group: root
