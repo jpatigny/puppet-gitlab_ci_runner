@@ -7,29 +7,27 @@ class gitlab_ci_runner::install (
   $package_ensure = $gitlab_ci_runner::package_ensure,
 ) {
   assert_private()
-
-  case $gitlab_ci_runner::install_method {
-    'repo': {
-      case $facts['os']['family'] {
-        'windows': {
-          package { $package_name:
-            ensure          => $package_ensure,
-            provider        => 'chocolatey',
-          }
-        }
-        default: {
-          package { $package_name:
-            ensure   => $package_ensure,
-          }
+  if $facts['os']['family'] != 'windows' {
+    case $gitlab_ci_runner::install_method {
+      'repo': {
+        package { $package_name:
+          ensure => $package_ensure,
         }
       }
-    }
-    'binary': {
-      if $facts['os']['family'] == "RedHat" {
-        file { "${gitlab_ci_runner::install_path}/${gitlab_ci_runner::binary}":
-          ensure  => file,
+      'binary': {
+        $_package_ensure = $package_ensure ? {
+          'installed' => 'present',
+          default  => $package_ensure,
+        }
+        archive { $gitlab_ci_runner::binary_path:
+          ensure  => $_package_ensure,
           source  => $gitlab_ci_runner::binary_source,
-          mode    => '0755',
+          extract => false,
+          creates => $gitlab_ci_runner::binary_path,
+        }
+        file { $gitlab_ci_runner::binary_path:
+          ensure => file,
+          mode   => '0755',
         }
         if $gitlab_ci_runner::manage_user {
           group { $gitlab_ci_runner::group:
@@ -41,15 +39,26 @@ class gitlab_ci_runner::install (
           }
         }
       }
-      if $facts['os']['family'] == "windows" {
-        file { "${gitlab_ci_runner::install_path}/${gitlab_ci_runner::binary}":
-          ensure  => file,
-          source  => $gitlab_ci_runner::binary_source,
-        }
+      default: {
+        fail("Unsupported install method: ${gitlab_ci_runner::install_method}")
       }
     }
-    default: {
-      fail("Unsupported install method: ${gitlab_ci_runner::install_method}")
+  } else {
+      case $gitlab_ci_runner::install_method {
+        'binary': {
+          file { $gitlab_ci_runner::install_path :
+            ensure => directory
+          }
+          file { "${gitlab_ci_runner::install_path}/${gitlab_ci_runner::binary}" :
+            ensure => file,
+            source => $gitlab_ci_runner::binary_source,
+            require => File[$gitlab_ci_runner::install_path]
+          }          
+        }
+        default: {
+          fail("Unsupported install method for windows: ${gitlab_ci_runner::install_method}")
+        }
+      }
     }
   }
 }
