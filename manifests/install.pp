@@ -44,20 +44,19 @@ class gitlab_ci_runner::install (
       }
     }
   } else {
-      case $gitlab_ci_runner::install_method {
-        'binary': {
-          file { $gitlab_ci_runner::install_path :
-            ensure => directory
-          }
-          file { "${gitlab_ci_runner::install_path}/${gitlab_ci_runner::binary}" :
-            ensure => file,
-            source => $gitlab_ci_runner::binary_source,
-            require => File[$gitlab_ci_runner::install_path]
-          }          
+    case $gitlab_ci_runner::install_method {
+      'binary': {
+        file { $gitlab_ci_runner::install_path :
+          ensure => directory
         }
-        default: {
-          fail("Unsupported install method for windows: ${gitlab_ci_runner::install_method}")
-        }
+        file { "${gitlab_ci_runner::install_path}/${gitlab_ci_runner::binary}" :
+          ensure => file,
+          source => $gitlab_ci_runner::binary_source,
+          require => File[$gitlab_ci_runner::install_path]
+        }          
+      }
+      default: {
+        fail("Unsupported install method for windows: ${gitlab_ci_runner::install_method}")
       }
     }
   }
