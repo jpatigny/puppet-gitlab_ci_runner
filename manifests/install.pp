@@ -25,20 +25,11 @@ class gitlab_ci_runner::install (
       }
     }
     'binary': {
-      $_package_ensure = $package_ensure ? {
-        'installed' => 'present',
-        default  => $package_ensure,
-      }
-      archive { "${gitlab_ci_runner::install_path}/${gitlab_ci_runner::binary}":
-        ensure  => $_package_ensure,
-        source  => $gitlab_ci_runner::binary_source,
-        extract => false,
-        creates => "${gitlab_ci_runner::install_path}/${gitlab_ci_runner::binary}",
-      }
       if $facts['os']['family'] == "RedHat" {
         file { "${gitlab_ci_runner::install_path}/${gitlab_ci_runner::binary}":
-          ensure => file,
-          mode   => '0755',
+          ensure  => file,
+          source  => $gitlab_ci_runner::binary_source,
+          mode    => '0755',
         }
         if $gitlab_ci_runner::manage_user {
           group { $gitlab_ci_runner::group:
@@ -48,6 +39,12 @@ class gitlab_ci_runner::install (
             ensure => present,
             gid    => $gitlab_ci_runner::group,
           }
+        }
+      }
+      if $facts['os']['family'] == "windows" {
+        file { "${gitlab_ci_runner::install_path}/${gitlab_ci_runner::binary}":
+          ensure  => file,
+          source  => $gitlab_ci_runner::binary_source,
         }
       }
     }
