@@ -12,6 +12,12 @@ class gitlab_ci_runner::service (
       creates => '/etc/systemd/system/gitlab-runner.service',
     }
   }
+  if $facts['os']['family'] == 'windows' {
+    exec { 'install_service_windows':
+      command => "${gitlab_ci_runner::binary_path} install",
+    }
+  }
+
   service { $package_name:
     ensure => running,
     enable => true,

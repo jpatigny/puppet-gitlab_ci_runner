@@ -102,18 +102,19 @@ class gitlab_ci_runner (
   Optional[Pattern[/.*:.+/]]                 $listen_address    = undef,
   Optional[Gitlab_ci_runner::Session_server] $session_server    = undef,
   Enum['repo', 'binary']                     $install_method    = 'repo',
-  Stdlib::HTTPUrl                            $binary_source     = 'https://s3.dualstack.us-east-1.amazonaws.com/gitlab-runner-downloads/latest/binaries/gitlab-runner-linux-amd64',
-  Stdlib::Absolutepath                       $binary_path       = '/usr/local/bin/gitlab-runner',
+  Stdlib::HTTPUrl                            $binary_source,
+  Stdlib::Absolutepath                       $binary_path,
   Boolean                                    $manage_user       = false,
   String[1]                                  $user              = 'gitlab-runner',
   String[1]                                  $group             = $user,
   Boolean                                    $manage_docker     = false,
+  Optional[Hash]                             $docker_images
   Boolean                                    $manage_repo       = true,
   String                                     $package_ensure    = installed,
   String                                     $package_name      = 'gitlab-runner',
   Stdlib::HTTPUrl                            $repo_base_url     = 'https://packages.gitlab.com',
   Optional[Gitlab_ci_runner::Keyserver]      $repo_keyserver    = undef,
-  String                                     $config_path       = '/etc/gitlab-runner/config.toml',
+  String                                     $config_path,
   String[1]                                  $config_owner      = 'root',
   String[1]                                  $config_group      = 'root',
   Stdlib::Filemode                           $config_mode       = '0444',
@@ -126,15 +127,10 @@ class gitlab_ci_runner (
   Boolean                                    $package_gpgcheck  = true,
 ) {
   if $manage_docker {
-    # workaround for cirunner issue #1617
-    # https://gitlab.com/gitlab-org/gitlab-ci-multi-runner/issues/1617
-    stdlib::ensure_packages($xz_package_name)
-
-    $docker_images = {
-      ubuntu_focal => {
-        image     => 'ubuntu',
-        image_tag => 'focal',
-      },
+    if $facts['os']['family'] in ["RedHat","Suse"] {
+      # workaround for cirunner issue #1617
+      # https://gitlab.com/gitlab-org/gitlab-ci-multi-runner/issues/1617
+      stdlib::ensure_packages($xz_package_name)
     }
 
     include docker

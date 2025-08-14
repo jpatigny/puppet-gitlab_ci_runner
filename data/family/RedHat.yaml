@@ -1,3 +1,9 @@
 ---
 gitlab_ci_runner::xz_package_name: 'xz'
 gitlab_ci_runner::package_keysource: 'https://packages.gitlab.com/runner/gitlab-runner/gpgkey/runner-gitlab-runner-49F16C5CC3A0F81F.pub.gpg'
+gitlab_ci_runner::binary_path: '/usr/local/bin/gitlab-runner'
+gitlab_ci_runner::config_path: '/etc/gitlab-runner/config.toml'
+gitlab_ci_runner::docker_images: 
+  ubuntu_focal:
+    image: ubuntu
+    image_tag: focal
